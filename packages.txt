@@ -1,4 +1,4 @@
-add-ons;addon-google_apis-google-26
+add-ons;addon-google_apis-google-24
 build-tools;27.0.3
 extras;android;m2repository
 extras;google;m2repository
