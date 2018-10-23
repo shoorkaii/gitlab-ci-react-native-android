@@ -5,10 +5,10 @@
 # https://github.com/cuisines/gitlab-ci-react-native-android
 #
 
-FROM ubuntu:17.10
-MAINTAINER Sascha-Matthias Kulawik <sascha@kulawik.de>
+FROM ubuntu:18.04
+MAINTAINER Reza Ranjkesh Shoorkaii <shoorkaii@gmail.com>
 
-RUN echo "Android SDK 26.0.2"
+RUN echo "Android SDK 27.0.3"
 ENV VERSION_SDK_TOOLS "3859397"
 
 ENV ANDROID_HOME "/sdk"
@@ -54,19 +54,19 @@ RUN echo "Installing Yarn Deb Source" \
 	&& echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 
 RUN echo "Installing Node.JS" \
-	&& curl -sL https://deb.nodesource.com/setup_9.x | bash -
+	&& curl -sL https://deb.nodesource.com/setup_10.x | bash -
 
 ENV BUILD_PACKAGES git yarn nodejs build-essential imagemagick librsvg2-bin ruby ruby-dev wget libcurl4-openssl-dev
 RUN echo "Installing Additional Libraries" \
 	 && rm -rf /var/lib/gems \
 	 && apt-get update && apt-get install $BUILD_PACKAGES -qqy --no-install-recommends
 
-RUN echo "Installing Fastlane 2.61.0" \
+RUN echo "Installing Fastlane 2.107.0" \
 	&& gem install fastlane badge -N \
 	&& gem cleanup
 
 ENV GRADLE_HOME /opt/gradle
-ENV GRADLE_VERSION 3.3
+ENV GRADLE_VERSION 4.4
 
 RUN echo "Downloading Gradle" \
 	&& wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"

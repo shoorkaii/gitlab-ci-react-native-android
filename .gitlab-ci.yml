@@ -4,9 +4,9 @@ stages:
 build:
   stage: build
   script:
-    - docker build -t webcuisine/gitlab-ci-react-native-android .
+    - docker build -t shoorkaii/gitlab-ci-react-native-android .
 push:
   stage: push
   script:
-    - docker push webcuisine/gitlab-ci-react-native-android
+    - docker push shoorkaii/gitlab-ci-react-native-android
 
