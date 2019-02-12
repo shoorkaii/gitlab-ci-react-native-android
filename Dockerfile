@@ -17,6 +17,7 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get -qq update && \
     apt-get install -qqy --no-install-recommends \
+      apt-utils \
       bzip2 \
       curl \
       git-core \
@@ -27,6 +28,7 @@ RUN apt-get -qq update && \
       lib32gcc1 \
       lib32ncurses5 \
       lib32z1 \
+      gnupg \
       unzip \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
