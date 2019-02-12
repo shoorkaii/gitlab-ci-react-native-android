@@ -51,6 +51,8 @@ RUN mkdir -p /root/.android && \
 RUN while read -r package; do PACKAGES="${PACKAGES}${package} "; done < /sdk/packages.txt && \
     ${ANDROID_HOME}/tools/bin/sdkmanager ${PACKAGES}
 
+RUN yes | sdkmanager --licenses
+
 RUN echo "Installing Yarn Deb Source" \
 	&& curl -sS http://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
 	&& echo "deb http://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
