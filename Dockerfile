@@ -8,7 +8,7 @@
 FROM ubuntu:18.04
 MAINTAINER Reza Ranjkesh Shoorkaii <shoorkaii@gmail.com>
 
-RUN echo "Android SDK 27.0.3"
+RUN echo "Android SDK 28.0.3"
 ENV VERSION_SDK_TOOLS "3859397"
 
 ENV ANDROID_HOME "/sdk"
@@ -61,12 +61,12 @@ RUN echo "Installing Additional Libraries" \
 	 && rm -rf /var/lib/gems \
 	 && apt-get update && apt-get install $BUILD_PACKAGES -qqy --no-install-recommends
 
-RUN echo "Installing Fastlane 2.107.0" \
+RUN echo "Installing Fastlane 2.116.0" \
 	&& gem install fastlane badge -N \
 	&& gem cleanup
 
 ENV GRADLE_HOME /opt/gradle
-ENV GRADLE_VERSION 4.4
+ENV GRADLE_VERSION 4.6
 
 RUN echo "Downloading Gradle" \
 	&& wget --no-verbose --output-document=gradle.zip "https://services.gradle.org/distributions/gradle-${GRADLE_VERSION}-bin.zip"
