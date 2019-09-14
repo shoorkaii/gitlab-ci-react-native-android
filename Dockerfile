@@ -8,6 +8,12 @@
 FROM ubuntu:18.04
 MAINTAINER Reza Ranjkesh Shoorkaii <shoorkaii@gmail.com>
 
+EXPOSE 22
+EXPOSE 5037
+EXPOSE 5554
+EXPOSE 5555
+EXPOSE 5900
+
 RUN echo "Android SDK 28.0.3"
 ENV VERSION_SDK_TOOLS "3859397"
 
@@ -34,6 +40,10 @@ RUN apt-get -qq update && \
       unzip \
       wget \
       qt5-default \
+      ssh \
+      net-tools \
+      openssh-server \
+      socat \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN rm -f /etc/ssl/certs/java/cacerts; \
@@ -84,25 +94,34 @@ RUN echo "Installing Gradle" \
 	&& ln --symbolic "${GRADLE_HOME}/bin/gradle" /usr/bin/gradle
 
 
-RUN cd /opt && \
+RUN echo "Downloading & Install Kotlin" && cd /opt && \
     wget -q https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip && \
     unzip *kotlin*.zip && \
     rm *kotlin*.zip
 
-ENV ABI="x86_64" \
-    TARGET="android-28" \
-    TAG="google_apis" \
-    NAME="Docker" \
-    ANDROID_LOG_TAGS="e" \
-    ANDROID_EMULATOR_EXTRA_ARGS="-skin 1080x1920 -qemu -vnc :0" \
-    noVNC="false"
+#ENV ABI="x86_64" \
+#    TARGET="android-28" \
+#    TAG="google_apis" \
+#
+#RUN mkdir -p ~/.android \
+# && touch ~/.android/repositories.cfg \
+# && $ANDROID_HOME/tools/bin/sdkmanager --verbose \
+#        "tools" \
+#        "platforms;${TARGET}" \
+#        "system-images;${TARGET};${TAG};${ABI}"
 
-RUN mkdir -p ~/.android \
- && touch ~/.android/repositories.cfg \
- && $ANDROID_HOME/tools/bin/sdkmanager --verbose \
-        "tools" \
-        "platforms;${TARGET}" \
-        "system-images;${TARGET};${TAG};${ABI}"
+RUN echo "Downloading & Install System Image" && ( sleep 4 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --force -a --filter \
+    platform-tool,android-28,build-tools-28.0.3,sys-img-x86-android-28,sys-img-x86_64 && \
+    echo "y" | android update adb
+
+RUN mkdir /usr/local/android-sdk/tools/keymaps && \
+    touch /usr/local/android-sdk/tools/keymaps/en-us
+
+RUN echo "Run sshd" &&mkdir /var/run/sshd && \
+    echo "root:$ROOTPASSWORD" | chpasswd && \
+    sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
+    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
+    echo "export VISIBLE=now" >> /etc/profile
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV KOTLIN_HOME /opt/kotlinc
@@ -111,32 +130,6 @@ ENV PATH ${PATH}:${GRADLE_HOME}/bin:${KOTLIN_HOME}/bin:${ANDROID_HOME}/emulator:
 ENV _JAVA_OPTIONS -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
 ENV LD_LIBRARY_PATH ${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
 
-EXPOSE 22
-EXPOSE 5037
-EXPOSE 5554
-EXPOSE 5555
-EXPOSE 5900
-
-ADD sshd-banner /etc/ssh/
-ADD authorized_keys /tmp/
-RUN apt-get update -y && \
-    apt-get install -y --no-install-recommends openssh-server supervisor locales && \
-    mkdir -p /var/run/sshd /var/log/supervisord && \
-    locale-gen en en_US en_US.UTF-8 && \
-    apt-get remove -y locales && apt-get autoremove -y && \
-    FILE_SSHD_CONFIG="/etc/ssh/sshd_config" && \
-    echo "\nBanner /etc/ssh/sshd-banner" >> $FILE_SSHD_CONFIG && \
-    echo "\nPermitUserEnvironment=yes" >> $FILE_SSHD_CONFIG && \
-    ssh-keygen -q -N "" -f /root/.ssh/id_rsa && \
-    FILE_SSH_ENV="/root/.ssh/environment" && \
-    touch $FILE_SSH_ENV && chmod 600 $FILE_SSH_ENV && \
-    printenv | grep "JAVA_HOME\|GRADLE_HOME\|KOTLIN_HOME\|ANDROID_HOME\|LD_LIBRARY_PATH\|PATH" >> $FILE_SSH_ENV && \
-    FILE_AUTH_KEYS="/root/.ssh/authorized_keys" && \
-    touch $FILE_AUTH_KEYS && chmod 600 $FILE_AUTH_KEYS && \
-    for file in /tmp/*.pub; \
-    do if [ -f "$file" ]; then echo "\n" >> $FILE_AUTH_KEYS && cat $file >> $FILE_AUTH_KEYS && echo "\n" >> $FILE_AUTH_KEYS; fi; \
-    done && \
-    (rm /tmp/*.pub 2> /dev/null || true)
-
-ADD supervisord.conf /etc/supervisor/conf.d/
-CMD ["/usr/bin/supervisord"]
+ADD entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
