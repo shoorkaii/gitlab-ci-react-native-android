@@ -128,12 +128,6 @@ RUN apt-get update -y && \
     FILE_SSH_ENV="/root/.ssh/environment" && \
     touch $FILE_SSH_ENV && chmod 600 $FILE_SSH_ENV && \
     printenv | grep "JAVA_HOME\|GRADLE_HOME\|KOTLIN_HOME\|ANDROID_HOME\|LD_LIBRARY_PATH\|PATH" >> $FILE_SSH_ENV && \
-    FILE_AUTH_KEYS="/root/.ssh/authorized_keys" && \
-    touch $FILE_AUTH_KEYS && chmod 600 $FILE_AUTH_KEYS && \
-    for file in /tmp/*.pub; \
-    do if [ -f "$file" ]; then echo "\n" >> $FILE_AUTH_KEYS && cat $file >> $FILE_AUTH_KEYS && echo "\n" >> $FILE_AUTH_KEYS; fi; \
-    done && \
-    (rm /tmp/*.pub 2> /dev/null || true)
 
 ADD supervisord.conf /etc/supervisor/conf.d/
 CMD ["/usr/bin/supervisord"]
