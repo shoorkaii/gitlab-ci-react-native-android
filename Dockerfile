@@ -98,10 +98,6 @@ RUN cd /opt && \
 ENV ABI="x86_64" \
     TARGET="android-28" \
     TAG="google_apis" \
-    NAME="Docker" \
-    ANDROID_LOG_TAGS="e" \
-    ANDROID_EMULATOR_EXTRA_ARGS="-skin 1080x1920 -qemu -vnc :0" \
-    noVNC="false"
 
 RUN mkdir -p ~/.android \
  && touch ~/.android/repositories.cfg \
@@ -116,17 +112,3 @@ ENV KOTLIN_HOME /opt/kotlinc
 ENV PATH ${PATH}:${GRADLE_HOME}/bin:${KOTLIN_HOME}/bin:${ANDROID_HOME}/emulator:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools/bin
 ENV _JAVA_OPTIONS -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
 ENV LD_LIBRARY_PATH ${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
-
-RUN apt-get update -y && \
-    apt-get install -y --no-install-recommends openssh-server supervisor locales && \
-    mkdir -p /var/run/sshd /var/log/supervisord && \
-    locale-gen en en_US en_US.UTF-8 && \
-    apt-get remove -y locales && apt-get autoremove -y && \
-    FILE_SSHD_CONFIG="/etc/ssh/sshd_config" && \
-    ssh-keygen -q -N "" -f /root/.ssh/id_rsa && \
-    FILE_SSH_ENV="/root/.ssh/environment" && \
-    touch $FILE_SSH_ENV && chmod 600 $FILE_SSH_ENV && \
-    printenv | grep "JAVA_HOME\|GRADLE_HOME\|KOTLIN_HOME\|ANDROID_HOME\|LD_LIBRARY_PATH\|PATH" >> $FILE_SSH_ENV && \
-
-ADD supervisord.conf /etc/supervisor/conf.d/
-CMD ["/usr/bin/supervisord"]
