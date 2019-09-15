@@ -97,7 +97,7 @@ RUN cd /opt && \
 
 ENV ABI="x86_64" \
     TARGET="android-28" \
-    TAG="google_apis" \
+    TAG="google_apis"
 
 RUN mkdir -p ~/.android \
  && touch ~/.android/repositories.cfg \
