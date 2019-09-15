@@ -117,7 +117,6 @@ ENV PATH ${PATH}:${GRADLE_HOME}/bin:${KOTLIN_HOME}/bin:${ANDROID_HOME}/emulator:
 ENV _JAVA_OPTIONS -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
 ENV LD_LIBRARY_PATH ${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
 
-ADD authorized_keys /tmp/
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends openssh-server supervisor locales && \
     mkdir -p /var/run/sshd /var/log/supervisord && \
