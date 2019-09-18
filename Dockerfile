@@ -106,8 +106,8 @@ RUN mkdir -p ~/.android \
         "platforms;${TARGET}" \
         "system-images;${TARGET};${TAG};${ABI}"
 
-RUN $ANDROID_HOME/tools/bin/avdmanager create avd -n GITLAB_AVD -k \
-        "system-images;${TARGET};${TAG};${ABI}"
+RUN $ANDROID_HOME/tools/bin/avdmanager create avd -n GITLAB_AVD \
+        --package "system-images;${TARGET};${TAG};${ABI}"
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV KOTLIN_HOME /opt/kotlinc
