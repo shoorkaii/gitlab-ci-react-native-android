@@ -95,26 +95,24 @@ RUN cd /opt && \
     unzip *kotlin*.zip && \
     rm *kotlin*.zip
 
-ENV ABI="x86_64" \
-    TARGET="android-28" \
-    TAG="google_apis"
-
-RUN mkdir -p ~/.android \
- && touch ~/.android/repositories.cfg \
- && $ANDROID_HOME/tools/bin/sdkmanager --verbose \
-        "tools" \
-        "platforms;${TARGET}" \
-        "system-images;${TARGET};${TAG};${ABI}"
-
-RUN $ANDROID_HOME/tools/bin/avdmanager create avd --verbose \
-        --force \
-        --name GITLAB_AVD \
-        --abi ${TAG}/${ABI} \
-        --package "system-images;${TARGET};${TAG};${ABI}"
-
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ENV KOTLIN_HOME /opt/kotlinc
 
 ENV PATH ${PATH}:${GRADLE_HOME}/bin:${KOTLIN_HOME}/bin:${ANDROID_HOME}/emulator:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${ANDROID_HOME}/tools/bin
 ENV _JAVA_OPTIONS -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
 ENV LD_LIBRARY_PATH ${ANDROID_HOME}/emulator/lib64:${ANDROID_HOME}/emulator/lib64/qt/lib
+
+ENV ABI="x86" \
+    TARGET="android-27" \
+    TAG="google_apis" \
+    AVD_NAME="GITLAB_AVD"
+
+RUN mkdir -p ~/.android \
+ && touch ~/.android/repositories.cfg \
+ && $ANDROID_HOME/tools/bin/sdkmanager "system-images;${TARGET};${TAG};${ABI}"
+
+RUN $ANDROID_HOME/tools/bin/avdmanager create avd \
+        --force \
+        --name ${AVD_NAME} \
+        --abi ${TAG}/${ABI} \
+        --package "system-images;${TARGET};${TAG};${ABI}"
