@@ -106,7 +106,10 @@ RUN mkdir -p ~/.android \
         "platforms;${TARGET}" \
         "system-images;${TARGET};${TAG};${ABI}"
 
-RUN $ANDROID_HOME/tools/bin/avdmanager create avd -n GITLAB_AVD \
+RUN $ANDROID_HOME/tools/bin/avdmanager create avd \
+        --force \
+        --name GITLAB_AVD \
+        --abi ${TAG}/${ABI} \
         --package "system-images;${TARGET};${TAG};${ABI}"
 
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
