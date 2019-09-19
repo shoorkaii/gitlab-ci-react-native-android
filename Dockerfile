@@ -109,10 +109,9 @@ ENV ABI="x86" \
 
 RUN mkdir -p ~/.android \
  && touch ~/.android/repositories.cfg \
- && $ANDROID_HOME/tools/bin/sdkmanager "system-images;${TARGET};${TAG};${ABI}"
+ && $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-27;google_apis;x86"
 
 RUN $ANDROID_HOME/tools/bin/avdmanager create avd \
         --force \
-        --name ${AVD_NAME} \
-        --abi ${TAG}/${ABI} \
-        --package "system-images;${TARGET};${TAG};${ABI}"
+        --name GITLAB_AVD \
+        --package "system-images;android-27;google_apis;x86"
