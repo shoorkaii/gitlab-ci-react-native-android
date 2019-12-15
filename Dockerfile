@@ -109,9 +109,7 @@ ENV ABI="x86" \
 
 RUN mkdir -p ~/.android \
  && touch ~/.android/repositories.cfg \
- && $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-27;google_apis;x86"
+ && $ANDROID_HOME/tools/bin/sdkmanager "system-images;android-28;google_apis;x86"
 
-RUN $ANDROID_HOME/tools/bin/avdmanager create avd \
-        --force \
-        --name GITLAB_AVD \
-        --package "system-images;android-27;google_apis;x86"
+RUN echo "no" | $ANDROID_HOME/tools/bin/avdmanager --verbose create avd --force --name "GITLAB_AVD" --package "system-images;android-28;google_apis;x86" --tag "google_apis" --abi "x86"
+RUN alias generic_9.0 ="emulator @GITLAB_AVD -no-boot-anim -netdelay none -no-snapshot -wipe-data -skin 768x1280 &"
